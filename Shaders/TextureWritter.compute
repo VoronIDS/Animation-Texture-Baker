@@ -1,0 +1,25 @@
+
+#pragma kernel CSMain
+
+struct MeshInfo{
+	float4 position;
+	float2 normal;
+	float3 tangent;
+};
+
+RWTexture2D<float4> OutPosition;
+RWTexture2D<float2> OutNormal;
+RWTexture2D<float4> OutTangent;
+StructuredBuffer<MeshInfo> Info;
+int VertCount;
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	int index = id.y * VertCount + id.x;
+	MeshInfo info = Info[index];
+
+	OutPosition[id.xy] = info.position;
+	OutNormal[id.xy] = info.normal;
+	OutTangent[id.xy] = float4(info.tangent, 1.0);
+}
